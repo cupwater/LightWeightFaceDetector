@@ -13,6 +13,7 @@ from models.retinaface import RetinaFace
 from utils.box_utils import decode, decode_landm
 from utils.timer import Timer
 
+import pdb
 
 parser = argparse.ArgumentParser(description='Retinaface')
 parser.add_argument('-m', '--trained_model', default='./weights/mobilenetv2_0.1_Final.pth',
@@ -159,6 +160,8 @@ if __name__ == '__main__':
         # landms = landms[:args.keep_top_k, :]
 
         dets = np.concatenate((dets, landms), axis=1)
+
+        pdb.set_trace()
 
         for b in dets:
             if b[4] < args.vis_thres:

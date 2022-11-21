@@ -91,38 +91,17 @@ class RetinaFace(nn.Module):
                 print("succeed loaded weights...")
         self.body = _utils.IntermediateLayerGetter(backbone, cfg['return_layers'])
         if cfg['name'] == 'mobilenet0.25':
-            in_channels_stage2 = cfg['in_channel']
             in_channels_list = [
-                # in_channels_stage2 * 2,
-                in_channels_stage2*4,
-                in_channels_stage2*8,
+                cfg['in_channel']*4,
+                cfg['in_channel']*8,
             ]
-        elif cfg['name'] == 'mobilenetv2_0.1':
-            in_channels_stage2 = cfg['in_channel1']
-            in_channels_stage3 = cfg['in_channel2']
+        else:
             in_channels_list = [
-                # in_channels_stage2 * 2,
-                in_channels_stage2,
-                in_channels_stage3,
-            ]
-        elif cfg['name'] == 'mobilenetv3':
-            in_channels_stage2 = cfg['in_channel1']
-            in_channels_stage3 = cfg['in_channel2']
-            in_channels_list = [
-                # in_channels_stage2 * 2,
-                in_channels_stage2,
-                in_channels_stage3,
-            ]
-        elif cfg['name'] == 'efficientnetb0':
-            in_channels_stage2 = cfg['in_channel1']
-            in_channels_stage3 = cfg['in_channel2']
-            in_channels_list = [
-                # in_channels_stage2 * 2,
-                in_channels_stage2,
-                in_channels_stage3,
+                cfg['in_channel1'],
+                cfg['in_channel2'],
             ]
         out_channels = cfg['out_channel']
-        self.fpn = FPN(in_channels_list,out_channels)
+        self.fpn = FPN(in_channels_list, out_channels)
         # self.ssh1 = SSH(out_channels, out_channels)
         self.ssh2 = SSH(out_channels, out_channels)
         self.ssh3 = SSH(out_channels, out_channels)

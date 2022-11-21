@@ -1,10 +1,17 @@
+'''
+Author: Peng Bo
+Date: 2022-11-21 08:56:02
+LastEditTime: 2022-11-21 09:30:24
+Description: 
+
+'''
 from __future__ import print_function
 import os
 import argparse
 import torch
 import torch.backends.cudnn as cudnn
 import numpy as np
-from data import cfg_mnet, cfg_re50
+from data import cfg_mnetv1, cfg_mnetv2, cfg_mnetv3
 from layers.functions.prior_box import PriorBox
 from utils.nms.py_cpu_nms import py_cpu_nms
 import cv2
@@ -62,10 +69,14 @@ def load_model(model, pretrained_path, load_to_cpu):
 if __name__ == '__main__':
     torch.set_grad_enabled(False)
     cfg = None
-    if args.network == "mobile0.25":
-        cfg = cfg_mnet
-    elif args.network == "resnet50":
-        cfg = cfg_re50
+
+    if args.network == "mobilenetv1":
+        cfg = cfg_mnetv1
+    elif args.network == "mobilenetv2":
+        cfg = cfg_mnetv2
+    elif args.network == "mobilenetv3":
+        cfg = cfg_mnetv3
+
     # net and model
     net = RetinaFace(cfg=cfg, phase = 'test')
     net = load_model(net, args.trained_model, args.cpu)
@@ -80,9 +91,9 @@ if __name__ == '__main__':
     print("==> Exporting model to ONNX format at '{}'".format(output_onnx))
     input_names = ["input0"]
     output_names = ["output0"]
-    inputs = torch.randn(1, 3, args.long_side, args.long_side).to(device)
+    inputs = torch.randn(1, 3, 180, 320).to(device)
 
     torch_out = torch.onnx._export(net, inputs, output_onnx, export_params=True, verbose=False,
-                                   input_names=input_names, output_names=output_names)
+                                   input_names=input_names, output_names=output_names, opset_version=11)
 
 
